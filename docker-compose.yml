@@ -1,0 +1,68 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: always
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    volumes:
+      - static:/code/static
+      - media:/code/media
+      - ./nginx/:/etc/nginx/conf.d/
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - django-web
+
+  django-web:
+    restart: always
+    build:
+      context: .
+      dockerfile: backend_django/Dockerfile
+    volumes:
+      - static:/webapp/static/
+      - media:/webapp/media/
+      - bundles:/webapp/bundles/
+
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    depends_on:
+      - db
+    command: sh -c "python3 /webapp/manage.py collectstatic --noinput &&
+        gunicorn -c gunicorn.py star_burger.wsgi"
+
+  node-web:
+    build:
+      context: .
+      dockerfile: frontend_node/Dockerfile
+    volumes:
+      - bundles:/webapp/bundles/
+
+#  certbot:
+#    image: certbot/certbot
+#    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#    volumes:
+#      - ./persistentdata/certbot/conf:/etc/letsencrypt
+#      - ./persistentdata/certbot/www:/var/www/certbot
+
+volumes:
+  db_data:
+  static:
+  media:
+  bundles:
