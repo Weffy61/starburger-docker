@@ -1,15 +1,14 @@
 #!/bin/bash
 set -e
-cd $1
-source venv/bin/activate
 git pull
-pip install -r requirements.txt
-npm ci --dev
-./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
-python3 manage.py collectstatic --noinput
-python3 manage.py migrate --noinput
-systemctl restart star-back.service
-systemctl reload nginx.service
+
+docker-compose -f docker-compose.yml exec django-web bash -c "pip3 install -r requirements.txt &&
+    python3 manage.py collectstatic --noinput &&
+    python3 manage.py migrate --noinput"
+
+docker-compose -f docker-compose.yml up -d node-web
+docker-compose -f docker-compose.yml restart django-web
+docker-compose -f docker-compose.yml restart nginx
 hash=$(git rev-parse HEAD)
 source .env
 curl --http1.1 -X POST \
