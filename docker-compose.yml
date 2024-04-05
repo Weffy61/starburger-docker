@@ -54,12 +54,12 @@ services:
     volumes:
       - bundles:/webapp/bundles/
 
-  certbot:
-    image: certbot/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    volumes:
-      - certbot_conf:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
+#  certbot:
+#    image: certbot/certbot
+#    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#    volumes:
+#      - certbot_conf:/etc/letsencrypt
+#      - certbot_www:/var/www/certbot
 
 volumes:
   db_data:
