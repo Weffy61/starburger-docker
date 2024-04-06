@@ -54,17 +54,29 @@ docker-compose --version
 - `DATABASE_URL` - Например: postgresql://USER:PASSWORD@HOST:PORT/NAME. [Подробнее](https://github.com/jazzband/dj-database-url#url-schema)
 - `DOMAIN` - ваш домен
 
-
-## Как запустить сайт
+## Как запустить dev-версию сайта
 
 Для запуска сайта используйте следующую команду:
 ```shell
-docker-compose up -d
+docker-compose -f docker-compose.dev.yml up -d
+```
+Для остановки:
+```shell
+docker-compose -f docker-compose.dev.yml down
+```
+
+Сайт будет запущен по адресу: `0.0.0.0:8000`
+
+## Как запустить prod-версию сайта
+
+Для запуска сайта используйте следующую команду:
+```shell
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 Для остановки:
 ```shell
-docker-compose up down
+docker-compose -f docker-compose.prod.yml down
 ```
 
 ### Быстрое обновление

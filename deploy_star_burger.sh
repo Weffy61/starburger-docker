@@ -2,13 +2,13 @@
 set -e
 git pull
 
-docker-compose -f docker-compose.yml exec django-web bash -c "pip3 install -r requirements.txt &&
+docker-compose -f docker-compose.prod.yml exec django-web bash -c "pip3 install -r requirements.txt &&
     python3 manage.py collectstatic --noinput &&
     python3 manage.py migrate --noinput"
 
-docker-compose -f docker-compose.yml up -d node-web
-docker-compose -f docker-compose.yml restart django-web
-docker-compose -f docker-compose.yml restart nginx
+docker-compose -f docker-compose.prod.yml up -d node-web
+docker-compose -f docker-compose.prod.yml restart django-web
+docker-compose -f docker-compose.prod.yml restart nginx
 hash=$(git rev-parse HEAD)
 source .env
 curl --http1.1 -X POST \
